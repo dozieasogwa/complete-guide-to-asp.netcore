@@ -1,3 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using My_books.Data;
+using My_books.Data.Services;
+
 namespace My_books
 {
     public class Program
@@ -9,9 +14,14 @@ namespace My_books
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddTransient<BooksService>();
+            builder.Services.AddTransient<AuthorsService>();
+            builder.Services.AddTransient<PublishersService>();
 
             var app = builder.Build();
 
@@ -29,7 +39,11 @@ namespace My_books
 
             app.MapControllers();
 
+           //AppDbInitializer.Seed(app);
+
             app.Run();
         }
+
+        
     }
 }
