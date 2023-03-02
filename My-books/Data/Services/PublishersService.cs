@@ -1,5 +1,7 @@
 ﻿using My_books.Data.Models;
 using My_books.Data.ViewModels;
+using My_books.Exceptions;
+using System.Text.RegularExpressions;
 
 namespace My_books.Data.Services
 {
@@ -11,8 +13,39 @@ namespace My_books.Data.Services
             _context = context;
         }
 
+        public List<Publisher> GetAllPublishers(string sortby, string searchString, int? pageNumber)
+        {
+            var allPublishers = _context.Publishers.OrderBy(n => n.Name).ToList();
+
+            if(!string.IsNullOrEmpty(sortby))
+            {
+                switch (sortby)
+                {
+                    case "name_desc":
+                        allPublishers = allPublishers.OrderByDescending(n => n.Name).ToList();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if(!string.IsNullOrEmpty(searchString))
+            {
+                allPublishers = allPublishers.Where(n => n.Name.Contains(searchString,
+                    StringComparison.CurrentCultureIgnoreCase)).ToList();
+            }
+
+            //Paging
+            int pageSize = 5;
+            allPublishers = allPublishers.Where(n => n.Name.Contains(searchString,StringComparison.CurrentCultureIgnoreCase)).ToList();
+
+            return allPublishers;
+        } 
+
         public Publisher AddPublisher(PublisherVM publisher)
         {
+            if(StringStartsWithNumber(publisher.Name)) throw new PublisherNameException("Name starts with number", publisher.Name);
+
             var _publisher = new Publisher()
             {
                 Name = publisher.Name
@@ -54,6 +87,11 @@ namespace My_books.Data.Services
             {
                 throw new Exception($"The publisher with id {id} does not exist.");
             }
+           
         }
+
+
+        private bool StringStartsWithNumber(string name) => (Regex.IsMatch(name, @"^\d"));
+     
     }
 }

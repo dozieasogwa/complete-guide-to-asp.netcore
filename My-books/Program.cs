@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using My_books.Data;
 using My_books.Data.Services;
+using My_books.Exceptions;
 
 namespace My_books
 {
@@ -35,6 +36,10 @@ namespace My_books
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+
+            //Execption Handling
+            app.ConfigureBuildInExceotionHandler();
+            //app.configureCustomExceptionHandler();
 
 
             app.MapControllers();
