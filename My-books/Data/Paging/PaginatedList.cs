@@ -1,13 +1,15 @@
-﻿namespace My_books.Data.Paging
+﻿using NPOI.SS.Formula.Functions;
+
+namespace My_books.Data.Paging
 {
     public class PaginatedList<T> : List<T>
     {
         public int PageIndex { get; private set; }
         public int TotalPages { get; private set; }
-        public PaginatedList(List<T> items, int pageIndex, int pageSize)
+        public PaginatedList(List<T> items, int pageIndex, int pageSize, int pageSize1)
         {
             pageIndex = pageIndex;
-            TotalPages = (int)Math.Ceiling(Count / (double)pageSize);
+            TotalPages = (int)Math.Ceiling(Count/(double)pageSize);
 
             this.AddRange(items);
         }
@@ -31,7 +33,7 @@
         { 
             var count = source.Count();
             var items = source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-            return new PaginatedList<T>(items,count, pageIndex, pageSize);
+            return new PaginatedList<T>(items, count, pageIndex, pageSize);
         }
     }
 }

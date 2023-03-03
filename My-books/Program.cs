@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using My_books.Data;
 using My_books.Data.Services;
 using My_books.Exceptions;
+using Serilog;
 
 namespace My_books
 {
@@ -10,6 +12,17 @@ namespace My_books
     {
         public static void Main(string[] args)
         {
+           
+           // try
+           // {
+           //     Log.Logger = new LoggerConfiguration()
+           //         .WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day)
+           //         .CreateLogger();
+           // }
+           //finally
+           // {
+           //     Log.CloseAndFlush();
+           // }
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -23,6 +36,14 @@ namespace My_books
             builder.Services.AddTransient<BooksService>();
             builder.Services.AddTransient<AuthorsService>();
             builder.Services.AddTransient<PublishersService>();
+            builder.Services.AddApiVersioning(config =>
+            {
+                config.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+                config.AssumeDefaultVersionWhenUnspecified = true;
+
+                //config.ApiVersionReader = new HeaderApiVersionReader("custom-version-header");
+                //config.ApiVersionReader = new MediaTypeApiVersionReader();
+            });
 
             var app = builder.Build();
 
@@ -34,6 +55,7 @@ namespace My_books
             }
 
             app.UseHttpsRedirection();
+            app.UseSerilogRequestLogging();
 
             app.UseAuthorization();
 
